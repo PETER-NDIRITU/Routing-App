@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routing App</title>
+    <link rel="stylesheet" href="WEBMAPPING.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
+    <link rel="stylesheet" href="L.Control.SlideMenu.css" />
+
+ <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+
+</head>
+<body>
+    <head>
+    <br>
+    <div class="topnav" id="myTopnav">
+  <a href="#home" class="active">Home</a>
+  <!-- <a href="#news">About</a> -->
+  <a href="https://wa.link/dre90b">Contacts</a>
+  
+  <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+     <br><br>
+    </head>
+
+    <div id="map"></div> 
+    <script>
+
+        var map = L.map('map').setView([ -0.4371, 36.9580], 9);
+       
+       var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+           maxZoom: 19,
+           attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+       });
+       osm.addTo(map); 
+    
+       if(!navigator.geolocation) {
+           console.log("Your browser doesn't support geolocation feature")
+       
+       } else{
+           navigator.geolocation.getCurrentPosition(getPosition)
+       }
+       
+       function getPosition(position){
+          // console.long(position)
+           var lat = position.coords.latitude
+           var long = position.coords.longitude
+           var accuracy = position.coords.accuracy
+           
+         var marker = L.marker([e.latlng.lat, e.latlng.lng],{icon:taxiIcon}).addTo(map)
+         var circle = L.circle([lat, long], {radius: accuracy})
+       
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map)
+       
+           console.log("Your coordinate is:lat:"+lat, "long:"+long, "Accuracy:"+accuracy)
+       }
+       
+       var geocoder =L.Control.geocoder().addTo(map);
+    
+      
+   
+    var Esri_WorldStreetMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+    });
+    var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    });
+    
+    var baseLayers = {
+        "OpenStreetMap": osm,
+        "Satellite":Esri_WorldImagery,
+        "Google Map":Esri_WorldStreetMap,
+    
+    };
+
+    
+    L.control.layers(baseLayers).addTo(map);
+
+
+    var taxiIcon = L.icon({
+        iconUrl : 'taxi.jpg',
+        iconSize : [70,70]
+    })
+    
+    //map click event
+    map.on('click',function (e){
+      console.log(e)
+      var secondMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map)
+       L.Routing.control({
+      waypoints: [
+        L.latLng(-0.4371, 36.9580),
+        L.latLng(e.latlng.lat, e.latlng.lng)
+  ]
+
+       }).on('routesfound',function (e){console.log(e)
+        
+      })
+
+.addTo(map);
+    })
+
+
+
+  
+
+
+
+</script>
+      </div>
+
+       <div class="footer">
+<h3> &copy; Peter Thuku 2023 </h3>
+</div>
+
+</body>
+
+</html>
+
